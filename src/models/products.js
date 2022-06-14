@@ -2,11 +2,15 @@ const mongoose = require("mongoose");
 
 const productSchema = mongoose.Schema(
   {
-    name: { type: String, required: true },
-    ingredients: { type: [String], required: true },
-    preparation: { type: String, required: true },
-    benefits: { type: String, required: true },
-    category: { type: String, required: true }
+    name: { type: String, required: true, trim: true },
+    ingredients: { type: [String], required: true, trim: true },
+    preparation: { type: String, required: true, trim: true },
+    benefits: { type: String, required: true, trim: true },
+    category: { type: String, required: true, trim: true },
+    image: {
+      url: String,
+      public_id: String
+    }
   },
   {
     timestamps: true
