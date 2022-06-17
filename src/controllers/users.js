@@ -1,9 +1,17 @@
-const userSchema = require("../models/users");
+const {
+  obtenerUsuarios,
+  obtenerUsuarioConEmail,
+  obtenerUsuario,
+  insertarUsuario,
+  actualizarUsuario,
+  eliminarUsuario,
+  obtenerUsuariosPorParametro
+} = require("../models/users");
 const bcrypt = require("bcrypt");
 
 const getUsers = async (req, res, next) => {
   try {
-    const users = await userSchema.find({}).populate("favorites");
+    const users = await obtenerUsuarios();
 
     return res.json(users);
   } catch (error) {
@@ -14,7 +22,7 @@ const getUsers = async (req, res, next) => {
 const getUserWithEmail = async (req, res, next) => {
   try {
     const { email } = req.params;
-    const user = await userSchema.findOne({ email }).populate("favorites");
+    const user = await obtenerUsuarioConEmail(email);
 
     res.json(user);
   } catch (error) {
@@ -24,10 +32,8 @@ const getUserWithEmail = async (req, res, next) => {
 
 const getUser = async (req, res, next) => {
   try {
-    /*  const { id } = req.params; */
-
     const { id } = req.params;
-    const user = await userSchema.findById(id).populate("favorites");
+    const user = await obtenerUsuario(id);
 
     return res.json(user);
   } catch (error) {
@@ -39,18 +45,18 @@ const createUser = async (req, res, next) => {
   try {
     const { email } = req.body;
 
-    const user = await userSchema.findOne({ email });
+    const user = await obtenerUsuarioConEmail(email);
 
     if (user) {
       return res.json(user);
     } else {
-      const nuevoUsuario = new userSchema(req.body);
+      const nuevoUsuario = req.body;
 
       const passwordHash = await bcrypt.hash(nuevoUsuario.password, 5);
 
       nuevoUsuario.password = passwordHash;
 
-      const userSaved = await nuevoUsuario.save();
+      const userSaved = await insertarUsuario(nuevoUsuario);
 
       return res.json(userSaved);
     }
@@ -70,9 +76,7 @@ const updateUser = async (req, res, next) => {
       telefono: user.telefono
     };
 
-    const userUpdate = await userSchema.findByIdAndUpdate(id, newUserInfo, {
-      new: true
-    });
+    const userUpdate = await actualizarUsuario(id, newUserInfo);
 
     res.json(userUpdate);
   } catch (error) {
@@ -83,7 +87,7 @@ const updateUser = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userDelete = await userSchema.findByIdAndRemove(id);
+    const userDelete = await eliminarUsuario(id);
 
     res.json(userDelete);
   } catch (error) {
@@ -94,7 +98,7 @@ const deleteUser = async (req, res, next) => {
 const getUserParams = async (req, res, next) => {
   try {
     const { param } = req.params;
-    const paramUser = await userSchema.find({ nombre: new RegExp(param, "i") });
+    const paramUser = await obtenerUsuariosPorParametro(param);
 
     res.json(paramUser);
   } catch (error) {
@@ -110,7 +114,7 @@ const resetPasswordUser = async (req, res, next) => {
 
     console.log(email, password);
 
-    const user = await userSchema.findOne({ email });
+    const user = await obtenerUsuarioConEmail(email);
 
     const passwordHash = await bcrypt.hash(password, 5);
 
@@ -118,13 +122,15 @@ const resetPasswordUser = async (req, res, next) => {
 
     console.log(user.password);
 
-    const userUpdate = await userSchema.findByIdAndUpdate(
+    /*     const userUpdate = await userSchema.findByIdAndUpdate(
       user._id.toString(),
       user,
       {
         new: true
       }
-    );
+    ); */
+
+    const userUpdate = await actualizarUsuario(user._id.toString(), user);
 
     res.json(userUpdate);
   } catch (error) {

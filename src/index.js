@@ -45,5 +45,5 @@ app.get("/", (req, res) => {
 
 //Configurar server básico
 app.listen(PORT, () => {
-  console.log(`El servidor ${PORT} está corriendo correctamente.`);
+  console.log(`El servidor está corriendo correctamente.`);
 });

@@ -1,8 +1,14 @@
-const categorySchema = require("../models/categories");
+const {
+  obtenerCategorias,
+  obtenerCategoria,
+  insertarCategoria,
+  actualizarCategoria,
+  eliminarCategoria
+} = require("../models/categories");
 
 const getCategories = async (req, res, next) => {
   try {
-    const categories = await categorySchema.find({});
+    const categories = await obtenerCategorias();
 
     return res.json(categories);
   } catch (error) {
@@ -14,7 +20,7 @@ const getCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const categorie = await categorySchema.findById(id);
+    const categorie = await obtenerCategoria(id);
 
     if (!categorie) return res.sendStatus(404);
 
@@ -26,9 +32,9 @@ const getCategory = async (req, res, next) => {
 
 const createCategory = async (req, res, next) => {
   try {
-    const newCategorie = new categorySchema(req.body);
+    const newCategorie = req.body;
 
-    const savedCategorie = await newCategorie.save();
+    const savedCategorie = await insertarCategoria(newCategorie);
 
     return res.json(savedCategorie);
   } catch (error) {
@@ -39,17 +45,11 @@ const createCategory = async (req, res, next) => {
 const updateCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const categorie = req.body;
+    const newCategoryInfo = req.body;
 
-    const categorieUpdate = await categorySchema.findByIdAndUpdate(
-      id,
-      categorie,
-      {
-        new: true
-      }
-    );
+    const categoryUpdate = await actualizarCategoria(id, newCategoryInfo);
 
-    return res.json(categorieUpdate);
+    return res.json(categoryUpdate);
   } catch (error) {
     next(error);
   }
@@ -59,7 +59,7 @@ const deleteCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const categorieDelete = await categorySchema.findByIdAndRemove(id);
+    const categorieDelete = await eliminarCategoria(id);
 
     if (!categorieDelete) return res.sendStatus(404);
 

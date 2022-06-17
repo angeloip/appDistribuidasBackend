@@ -1,10 +1,16 @@
-const productSchema = require("../models/products");
+const {
+  obtenerPlatos,
+  obtenerPlato,
+  insertarPlato,
+  actualizarPlato,
+  eliminarPlato
+} = require("../models/products");
 const { uploadImage, deleteImage } = require("../utils/cloudinary");
 const fs = require("fs-extra");
 
 const getProducts = async (req, res, next) => {
   try {
-    const products = await productSchema.find({});
+    const products = await obtenerPlatos();
 
     return res.json(products);
   } catch (error) {
@@ -16,7 +22,7 @@ const getProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const product = await productSchema.findById(id);
+    const product = await obtenerPlato(id);
 
     if (!product) return res.sendStatus(404);
 
@@ -28,7 +34,7 @@ const getProduct = async (req, res, next) => {
 
 const createProduct = async (req, res, next) => {
   try {
-    const newProduct = new productSchema(req.body);
+    const newProduct = req.body;
     let image = null;
 
     const ingredients = newProduct.ingredients.toString().split(",");
@@ -51,7 +57,7 @@ const createProduct = async (req, res, next) => {
 
     newProduct.image = image;
 
-    const savedProduct = await newProduct.save();
+    const savedProduct = await insertarPlato(newProduct);
 
     return res.json(savedProduct);
   } catch (error) {
@@ -72,13 +78,7 @@ const updateProduct = async (req, res, next) => {
       category: product.category
     };
  */
-    const productUpdate = await productSchema.findByIdAndUpdate(
-      id,
-      newProductInfo,
-      {
-        new: true
-      }
-    );
+    const productUpdate = await actualizarPlato(id, newProductInfo);
 
     return res.json(productUpdate);
   } catch (error) {
@@ -90,7 +90,7 @@ const deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const productDelete = await productSchema.findByIdAndRemove(id);
+    const productDelete = await eliminarPlato(id);
 
     if (productDelete && productDelete.image.public_id) {
       await deleteImage(productDelete.image.public_id);

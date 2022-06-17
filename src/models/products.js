@@ -1,27 +1,57 @@
-const mongoose = require("mongoose");
+const productSchema = require("../schemas/products");
 
-const productSchema = mongoose.Schema(
-  {
-    name: { type: String, required: true, trim: true },
-    ingredients: { type: [String], required: true, trim: true },
-    preparation: { type: String, required: true, trim: true },
-    benefits: { type: String, required: true, trim: true },
-    category: { type: String, required: true, trim: true },
-    image: {
-      url: String,
-      public_id: String
-    }
-  },
-  {
-    timestamps: true
+const obtenerPlatos = async () => {
+  try {
+    return await productSchema.find({});
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
   }
-);
+};
 
-productSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    delete returnedObject.__v;
-    delete returnedObject.updatedAt;
+const obtenerPlato = async (id) => {
+  try {
+    return await productSchema.findById(id);
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
   }
-});
+};
 
-module.exports = mongoose.model("products", productSchema);
+const insertarPlato = async (data) => {
+  try {
+    const newProduct = new productSchema(data);
+    return await newProduct.save();
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+const actualizarPlato = async (id, data) => {
+  try {
+    return await productSchema.findByIdAndUpdate(id, data, {
+      new: true
+    });
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+const eliminarPlato = async (id) => {
+  try {
+    return await productSchema.findByIdAndRemove(id);
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+module.exports = {
+  obtenerPlatos,
+  obtenerPlato,
+  insertarPlato,
+  actualizarPlato,
+  eliminarPlato
+};

@@ -1,29 +1,77 @@
-const mongoose = require("mongoose");
+const userSchema = require("../schemas/users");
 
-const userSchema = mongoose.Schema(
-  {
-    name: { type: String, required: true, trim: true },
-    email: { type: String, unique: true, required: true, trim: true },
-    mobile: { type: String, trim: true, default: "" },
-    password: { type: String, required: true, trim: true },
-    favorites: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "favoritos"
-      }
-    ]
-  },
-  {
-    timestamps: true
+const obtenerUsuarios = async () => {
+  try {
+    return await userSchema.find({}).populate("favorites");
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
   }
-);
+};
 
-userSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    delete returnedObject.__v;
-    delete returnedObject.password;
-    delete returnedObject.updatedAt;
+const obtenerUsuarioConEmail = async (email) => {
+  try {
+    return await userSchema.findOne({ email }).populate("favorites");
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
   }
-});
+};
 
-module.exports = mongoose.model("usuarios", userSchema);
+const obtenerUsuario = async (id) => {
+  try {
+    return await userSchema.findById(id).populate("favorites");
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+const insertarUsuario = async (data) => {
+  try {
+    const newUser = new userSchema(data);
+    return await newUser.save();
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+const actualizarUsuario = async (id, data) => {
+  try {
+    return await userSchema.findByIdAndUpdate(id, data, {
+      new: true
+    });
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+const eliminarUsuario = async (id) => {
+  try {
+    return await userSchema.findByIdAndRemove(id);
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+const obtenerUsuariosPorParametro = async (param) => {
+  try {
+    return await userSchema.find({ nombre: new RegExp(param, "i") });
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+module.exports = {
+  obtenerUsuarios,
+  obtenerUsuarioConEmail,
+  obtenerUsuario,
+  insertarUsuario,
+  actualizarUsuario,
+  eliminarUsuario,
+  obtenerUsuariosPorParametro
+};
