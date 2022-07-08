@@ -38,8 +38,12 @@ const createProduct = async (req, res, next) => {
     let image = null;
 
     const ingredients = newProduct.ingredients.toString().split(",");
+    const benefits = newProduct.benefits.toString().split(",");
+    const tags = newProduct.tags.toString().split(",");
 
     newProduct.ingredients = ingredients;
+    newProduct.benefits = benefits;
+    newProduct.tags = tags;
 
     if (req.files?.image) {
       const result = await uploadImage(req.files.image.tempFilePath);
