@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(
   fileUpload({
     useTempFiles: true,
-    tempFileDir: "./images"
+    tempFileDir: "./uploads"
   })
 );
 
@@ -22,6 +22,7 @@ const userRoute = require("./routes/users");
 const loginRoute = require("./routes/login");
 const favoriteRoute = require("./routes/favorites");
 const categoryRoute = require("./routes/categories");
+const paymentRoute = require("./routes/payment");
 
 //middleware
 app.use("/api/products", productRoute);
@@ -29,6 +30,7 @@ app.use("/api/users", userRoute);
 app.use("/api/login", loginRoute);
 app.use("/api/favorites", favoriteRoute);
 app.use("/api/categories", categoryRoute);
+app.use("/api/payment", paymentRoute);
 
 app.use((error, req, res, next) => {
   /* console.log("Error: ", error); */

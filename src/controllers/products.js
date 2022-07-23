@@ -7,6 +7,7 @@ const {
 } = require("../models/products");
 const { uploadImage, deleteImage } = require("../utils/cloudinary");
 const fs = require("fs-extra");
+const xlsx = require("xlsx");
 
 const getProducts = async (req, res, next) => {
   try {
@@ -108,10 +109,48 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+const loadDishesWithExcel = async (req, res, next) => {
+  try {
+    const workbook = xlsx.readFile(req.files.xlsx.tempFilePath);
+    const workbookSheets = workbook.SheetNames;
+    const sheet = workbookSheets[0];
+    const dataExcel = xlsx.utils.sheet_to_json(workbook.Sheets[sheet]);
+    await fs.remove(req.files.xlsx.tempFilePath);
+
+    return res.status(200).json({ length: dataExcel.length });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const exportExcel = async (req, res, next) => {
+  try {
+    const dishes = await obtenerPlatos();
+    const data = dishes.map((dish) => {
+      return {
+        name: dish.name,
+        ingredients: dish.ingredients.join(", "),
+        preparation: dish.preparation,
+        benefits: dish.benefits.join(", "),
+        category: dish.category
+      };
+    });
+    const wb = xlsx.utils.book_new();
+    const ws = xlsx.utils.json_to_sheet(data);
+    xlsx.utils.book_append_sheet(wb, ws, "Platos");
+    xlsx.writeFile(wb, "DataDePlatos.xlsx");
+    return res.status(200).json("ok");
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProduct,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  loadDishesWithExcel,
+  exportExcel
 };

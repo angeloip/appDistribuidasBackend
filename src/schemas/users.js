@@ -11,6 +11,12 @@ const userSchema = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "favoritos"
       }
+    ],
+    payments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "payments"
+      }
     ]
   },
   {
