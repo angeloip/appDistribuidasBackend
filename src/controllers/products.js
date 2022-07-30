@@ -6,6 +6,7 @@ const {
   eliminarPlato
 } = require("../models/products");
 const { uploadImage, deleteImage } = require("../utils/cloudinary");
+const productSchema = require("../schemas/products");
 const fs = require("fs-extra");
 const xlsx = require("xlsx");
 
@@ -25,7 +26,7 @@ const getProduct = async (req, res, next) => {
 
     const product = await obtenerPlato(id);
 
-    if (!product) return res.sendStatus(404);
+    if (!product) return res.status(404).json("404");
 
     return res.json(product);
   } catch (error) {
@@ -109,15 +110,40 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+const deleteManyProducts = async (req, res, next) => {
+  try {
+    const ids = req.body;
+    const deleteDishes = await productSchema.deleteMany({ _id: { $in: ids } });
+    return res.json(deleteDishes);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const loadDishesWithExcel = async (req, res, next) => {
   try {
     const workbook = xlsx.readFile(req.files.xlsx.tempFilePath);
     const workbookSheets = workbook.SheetNames;
     const sheet = workbookSheets[0];
     const dataExcel = xlsx.utils.sheet_to_json(workbook.Sheets[sheet]);
+    const dataTemp = dataExcel.map((data) => {
+      data.benefits = data.benefits.split(", ");
+      data.ingredients = data.ingredients.split(", ");
+      data.tags = data.tags.split(", ");
+      return {
+        ...data,
+        image: {
+          url: "",
+          public_id: ""
+        }
+      };
+    });
     await fs.remove(req.files.xlsx.tempFilePath);
+    const importData = await productSchema.insertMany(dataTemp);
 
-    return res.status(200).json({ length: dataExcel.length });
+    return res
+      .status(200)
+      .json({ length: importData.length, import: importData });
   } catch (error) {
     next(error);
   }
@@ -151,6 +177,7 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  deleteManyProducts,
   loadDishesWithExcel,
   exportExcel
 };

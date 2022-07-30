@@ -6,6 +6,7 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  deleteManyProducts,
   loadDishesWithExcel,
   exportExcel
 } = require("../controllers/products");
@@ -21,6 +22,8 @@ router.get("/:id", getProduct);
 router.put("/:id", updateProduct);
 
 router.delete("/:id", deleteProduct);
+
+router.post("/deletemanyproducts", deleteManyProducts);
 
 router.post("/xlsx", loadDishesWithExcel);
 
