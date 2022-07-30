@@ -7,6 +7,7 @@ const productSchema = mongoose.Schema(
     preparation: { type: String, required: true, trim: true },
     benefits: { type: [String], required: true, trim: true },
     category: { type: String, required: true, trim: true },
+    rating: { type: Number, default: 0, trim: true },
     image: {
       url: String,
       public_id: String
