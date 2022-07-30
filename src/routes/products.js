@@ -5,10 +5,10 @@ const {
   getProduct,
   createProduct,
   updateProduct,
+  updateImage,
   deleteProduct,
   deleteManyProducts,
-  loadDishesWithExcel,
-  exportExcel
+  loadDishesWithExcel
 } = require("../controllers/products");
 
 const router = express.Router();
@@ -21,12 +21,12 @@ router.get("/:id", getProduct);
 
 router.put("/:id", updateProduct);
 
+router.put("/image/:id", updateImage);
+
 router.delete("/:id", deleteProduct);
 
 router.post("/deletemanyproducts", deleteManyProducts);
 
 router.post("/xlsx", loadDishesWithExcel);
-
-router.post("/exportxlsx", exportExcel);
 
 module.exports = router;

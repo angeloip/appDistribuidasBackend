@@ -92,6 +92,44 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
+const updateImage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const product = await obtenerPlato(id);
+
+    if (!product) return res.status(404).json("404");
+
+    if (product.image.url === "") {
+      const result = await uploadImage(req.files.image.tempFilePath);
+      await fs.remove(req.files.image.tempFilePath);
+      image = {
+        url: result.secure_url,
+        public_id: result.public_id
+      };
+    } else {
+      await deleteImage(product.image.public_id);
+      const result = await uploadImage(req.files.image.tempFilePath);
+      await fs.remove(req.files.image.tempFilePath);
+      image = {
+        url: result.secure_url,
+        public_id: result.public_id
+      };
+    }
+
+    product.image.url = image.url;
+    product.image.public_id = image.public_id;
+
+    const newProduct = await productSchema.findByIdAndUpdate(id, product, {
+      new: true
+    });
+
+    return res.json(newProduct);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -149,35 +187,13 @@ const loadDishesWithExcel = async (req, res, next) => {
   }
 };
 
-const exportExcel = async (req, res, next) => {
-  try {
-    const dishes = await obtenerPlatos();
-    const data = dishes.map((dish) => {
-      return {
-        name: dish.name,
-        ingredients: dish.ingredients.join(", "),
-        preparation: dish.preparation,
-        benefits: dish.benefits.join(", "),
-        category: dish.category
-      };
-    });
-    const wb = xlsx.utils.book_new();
-    const ws = xlsx.utils.json_to_sheet(data);
-    xlsx.utils.book_append_sheet(wb, ws, "Platos");
-    xlsx.writeFile(wb, "DataDePlatos.xlsx");
-    return res.status(200).json("ok");
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   getProducts,
   getProduct,
   createProduct,
   updateProduct,
+  updateImage,
   deleteProduct,
   deleteManyProducts,
-  loadDishesWithExcel,
-  exportExcel
+  loadDishesWithExcel
 };
