@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const productSchema = mongoose.Schema(
   {
@@ -25,5 +26,7 @@ productSchema.set("toJSON", {
     delete returnedObject.updatedAt;
   }
 });
+
+productSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model("products", productSchema);

@@ -34,6 +34,29 @@ const getProduct = async (req, res, next) => {
   }
 };
 
+const getProductsForCategory = async (req, res, next) => {
+  try {
+    const category = req.body;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const page = parseInt(req.query.page, 10) || 1;
+
+    let data = [];
+
+    if (category.category === "Todo") {
+      data = await productSchema.paginate({}, { limit, page });
+    } else {
+      data = await productSchema.paginate(
+        { category: category.category },
+        { limit, page }
+      );
+    }
+
+    return res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createProduct = async (req, res, next) => {
   try {
     const newProduct = req.body;
@@ -190,6 +213,7 @@ const loadDishesWithExcel = async (req, res, next) => {
 module.exports = {
   getProducts,
   getProduct,
+  getProductsForCategory,
   createProduct,
   updateProduct,
   updateImage,

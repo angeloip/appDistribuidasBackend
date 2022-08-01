@@ -3,6 +3,7 @@ const express = require("express");
 const {
   getProducts,
   getProduct,
+  getProductsForCategory,
   createProduct,
   updateProduct,
   updateImage,
@@ -18,6 +19,8 @@ router.post("/", createProduct);
 router.get("/", getProducts);
 
 router.get("/:id", getProduct);
+
+router.post("/category", getProductsForCategory);
 
 router.put("/:id", updateProduct);
 
