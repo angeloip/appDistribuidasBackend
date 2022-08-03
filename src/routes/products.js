@@ -3,6 +3,7 @@ const express = require("express");
 const {
   getProducts,
   getProduct,
+  searchAutocomplete,
   getProductsForCategory,
   createProduct,
   updateProduct,
@@ -19,6 +20,8 @@ router.post("/", createProduct);
 router.get("/", getProducts);
 
 router.get("/:id", getProduct);
+
+router.post("/search", searchAutocomplete);
 
 router.post("/category", getProductsForCategory);
 

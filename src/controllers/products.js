@@ -34,6 +34,42 @@ const getProduct = async (req, res, next) => {
   }
 };
 
+const searchAutocomplete = async (req, res, next) => {
+  try {
+    const { name } = req.query;
+
+    const agg = [
+      {
+        $search: {
+          autocomplete: {
+            query: name,
+            path: "name",
+            fuzzy: {
+              maxEdits: 1
+            }
+          }
+        }
+      },
+      {
+        $limit: 5
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          category: 1,
+          image: 1
+        }
+      }
+    ];
+
+    const response = await productSchema.aggregate(agg);
+    return res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getProductsForCategory = async (req, res, next) => {
   try {
     const category = req.body;
@@ -213,6 +249,7 @@ const loadDishesWithExcel = async (req, res, next) => {
 module.exports = {
   getProducts,
   getProduct,
+  searchAutocomplete,
   getProductsForCategory,
   createProduct,
   updateProduct,
