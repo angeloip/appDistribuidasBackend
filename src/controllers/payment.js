@@ -1,6 +1,6 @@
 const paymentSchema = require("../schemas/payment");
 const userSchema = require("../schemas/users");
-const Stripe = require("stripe")("sk_test_51LOPzIIXUY55H6B6qWLyhOIKiGInCkE13XOxThoeOpNV4CCDjs2DRbqTjhgG9C3qPHWFl1yB0StwA12Xd3O3bHvd00WL0x5dGZ);
+const Stripe = require("stripe")("sk_test_51LOPzIIXUY55H6B6qWLyhOIKiGInCkE13XOxThoeOpNV4CCDjs2DRbqTjhgG9C3qPHWFl1yB0StwA12Xd3O3bHvd00WL0x5dGZ");
 
 /* const stripe = new Stripe(process.env.API_STRIPE); */
 
