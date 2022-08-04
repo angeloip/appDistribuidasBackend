@@ -1,8 +1,8 @@
 const paymentSchema = require("../schemas/payment");
 const userSchema = require("../schemas/users");
-const Stripe = require("stripe");
+const Stripe = require("stripe")(process.env.API_STRIPE);
 
-const stripe = new Stripe(process.env.API_STRIPE);
+/* const stripe = new Stripe(process.env.API_STRIPE); */
 
 const getPayments = async (req, res, next) => {
   try {
@@ -21,7 +21,7 @@ const createPayment = async (req, res, next) => {
     const user = await userSchema.findById(newPayment.user);
 
     if (user) {
-      await stripe.paymentIntents.create({
+      await Stripe.paymentIntents.create({
         amount: newPayment.amount,
         currency: "USD",
         description: newPayment.dish.toString(),
