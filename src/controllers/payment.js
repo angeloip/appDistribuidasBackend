@@ -1,10 +1,6 @@
 const paymentSchema = require("../schemas/payment");
 const userSchema = require("../schemas/users");
-<<<<<<< HEAD
 const Stripe = require("stripe");
-=======
-const Stripe = require("stripe")("sk_test_51LOPzIIXUY55H6B6qWLyhOIKiGInCkE13XOxThoeOpNV4CCDjs2DRbqTjhgG9C3qPHWFl1yB0StwA12Xd3O3bHvd00WL0x5dGZ");
->>>>>>> 1f766ecd9665082ee7b55c63530826853ee7a1a1
 
 const stripe = new Stripe(process.env.STRIPE_SK);
 
