@@ -17,7 +17,12 @@ const userSchema = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "payments"
       }
-    ]
+    ],
+    role: {
+      type: String,
+      trim: true,
+      default: "user"
+    }
   },
   {
     timestamps: true

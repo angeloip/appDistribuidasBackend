@@ -13,9 +13,11 @@ const {
   loadDishesWithExcel
 } = require("../controllers/products");
 
+const { checkToken } = require("../utils/userExtractor");
+
 const router = express.Router();
 
-router.post("/", createProduct);
+router.post("/", checkToken, createProduct);
 
 router.get("/", getProducts);
 

@@ -3,20 +3,24 @@ const jwt = require("jsonwebtoken");
 const userSchema = require("../schemas/users");
 
 const createLogin = async (req, res) => {
-  const { body } = req;
-  const { email, password } = body;
+  const { email, password } = req.body;
 
   const user = await userSchema.findOne({ email });
+
+  if (!user)
+    return res.status(401).json({ errorMessage: "Invalid email or password" });
 
   const passwordCorrect =
     user === null ? false : await bcrypt.compare(password, user.password);
 
   if (!(user && passwordCorrect)) {
-    res.status(400).json({ errorMessage: "Invalid user or password" });
+    res.status(401).json({ errorMessage: "Invalid email or password" });
   } else {
     const userForToken = {
       id: user._id,
-      email: user.email
+      email: user.email,
+      name: user.name,
+      role: user.role
     };
 
     const token = jwt.sign(userForToken, process.env.SECRET);
@@ -25,23 +29,25 @@ const createLogin = async (req, res) => {
       id: user._id,
       name: user.name,
       email: user.email,
-      token: token
+      token: token,
+      role: user.role
     });
   }
 };
 
 const createLoginWithGoogle = async (req, res) => {
-  const { body } = req;
-  const { email } = body;
+  const { email } = req.body;
 
   const user = await userSchema.findOne({ email });
 
   if (!user) {
-    res.status(400).json({ errorMessage: "Invalid user or password" });
+    res.status(401).json({ errorMessage: "Invalid email or password" });
   } else {
     const userForToken = {
       id: user._id,
-      email: user.email
+      email: user.email,
+      name: user.name,
+      role: user.role
     };
 
     const token = jwt.sign(userForToken, process.env.SECRET);
