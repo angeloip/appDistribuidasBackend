@@ -6,6 +6,7 @@ const {
   searchAutocomplete,
   getProductsForCategory,
   createProduct,
+  createProductReview,
   updateProduct,
   updateImage,
   deleteProduct,
@@ -18,6 +19,8 @@ const { checkToken } = require("../utils/userExtractor");
 const router = express.Router();
 
 router.post("/", checkToken, createProduct);
+
+router.post("/:id/reviews", checkToken, createProductReview);
 
 router.get("/", getProducts);
 

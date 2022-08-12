@@ -1,6 +1,22 @@
 const mongoose = require("mongoose");
 const mongoosePaginate = require("mongoose-paginate-v2");
 
+const reviewSchema = mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "usuarios"
+  },
+  name: { type: String, required: true, trim: true },
+  rating: { type: Number, required: true, trim: true },
+  comment: { type: String, required: true, trim: true },
+  date: {
+    type: String,
+    required: true,
+    trim: true
+  }
+});
+
 const productSchema = mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -9,6 +25,7 @@ const productSchema = mongoose.Schema(
     benefits: { type: [String], required: true, trim: true },
     category: { type: String, required: true, trim: true },
     rating: { type: Number, default: 0, trim: true },
+    reviews: [reviewSchema],
     image: {
       url: String,
       public_id: String

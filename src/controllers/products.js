@@ -7,6 +7,7 @@ const {
 } = require("../models/products");
 const { uploadImage, deleteImage } = require("../utils/cloudinary");
 const productSchema = require("../schemas/products");
+const userSchema = require("../schemas/users");
 const fs = require("fs-extra");
 const xlsx = require("xlsx");
 
@@ -125,6 +126,61 @@ const createProduct = async (req, res, next) => {
     const savedProduct = await insertarPlato(newProduct);
 
     return res.json(savedProduct);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createProductReview = async (req, res, next) => {
+  try {
+    const { rating, comment } = req.body;
+
+    const product = await productSchema.findById(req.params.id);
+
+    if (!product) return res.status(404).json("404");
+
+    const user = await userSchema.findById(req.userId);
+
+    if (!user) return res.status(404).json("404");
+
+    const alreadyReviewed = product.reviews.find(
+      (rev) => rev.user.toString() === req.userId.toString()
+    );
+
+    if (alreadyReviewed) return res.status(400).json("400");
+
+    const firstPartDate = new Date().toLocaleString([], {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    const secondPartDate = new Date().toLocaleString([], {
+      hour: "numeric",
+      minute: "numeric"
+    });
+
+    const date = firstPartDate + " a las " + secondPartDate;
+
+    const review = {
+      user: user._id,
+      name: user.name,
+      rating: rating,
+      comment: comment,
+      date: date
+    };
+
+    product.reviews = product.reviews.concat(review);
+
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length;
+
+    await product.save();
+
+    return res
+      .status(200)
+      .json({ reviews: product.reviews, rating: product.rating });
   } catch (error) {
     next(error);
   }
@@ -252,6 +308,7 @@ module.exports = {
   searchAutocomplete,
   getProductsForCategory,
   createProduct,
+  createProductReview,
   updateProduct,
   updateImage,
   deleteProduct,

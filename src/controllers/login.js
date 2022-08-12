@@ -56,7 +56,8 @@ const createLoginWithGoogle = async (req, res) => {
       id: user._id,
       name: user.name,
       email: user.email,
-      token: token
+      token: token,
+      role: user.role
     });
   }
 };
