@@ -11,7 +11,18 @@ const obtenerPlatos = async () => {
 
 const obtenerPlato = async (id) => {
   try {
-    return await productSchema.findById(id);
+    /* const aea = await productSchema.findById(id).populate({
+      path: "reviews",
+      populate: [{ path: "user", select: "name" }]
+    });
+
+    const go = aea.reviews;
+
+    return go; */
+    return await productSchema.findById(id).populate({
+      path: "reviews",
+      populate: [{ path: "user", select: "name" }]
+    });
   } catch (e) {
     console.log(e);
     throw new Error(e);

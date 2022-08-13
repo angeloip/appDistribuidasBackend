@@ -164,7 +164,6 @@ const createProductReview = async (req, res, next) => {
 
     const review = {
       user: user._id,
-      name: user.name,
       rating: rating,
       comment: comment,
       date: date
@@ -176,11 +175,16 @@ const createProductReview = async (req, res, next) => {
       product.reviews.reduce((acc, item) => item.rating + acc, 0) /
       product.reviews.length;
 
-    await product.save();
+    const savedProduct = await product.save();
+
+    await savedProduct.populate({
+      path: "reviews",
+      populate: [{ path: "user", select: "name" }]
+    });
 
     return res
       .status(200)
-      .json({ reviews: product.reviews, rating: product.rating });
+      .json({ reviews: savedProduct.reviews, rating: savedProduct.rating });
   } catch (error) {
     next(error);
   }

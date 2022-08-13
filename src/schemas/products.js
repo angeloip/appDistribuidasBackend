@@ -7,7 +7,6 @@ const reviewSchema = mongoose.Schema({
     required: true,
     ref: "usuarios"
   },
-  name: { type: String, required: true, trim: true },
   rating: { type: Number, required: true, trim: true },
   comment: { type: String, required: true, trim: true },
   date: {
